@@ -1,0 +1,20 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+LAYOUT_WITH_LEGEND()
+
+Person(user, "Concurseiro / Vestibulando", "Usuário que organiza e acompanha seus estudos para concursos e vestibulares.")
+System(system, "Gestão de Ciclos de Estudo", "Organiza ciclos, tarefas, revisões e estatísticas de desempenho.")
+
+System_Ext(auth, "Serviço de Autenticação (OIDC/OAuth2)", "Autentica e autoriza usuários.")
+System_Ext(apiConcursos, "API de Concursos Públicos", "Fornece dados de concursos, cargos e disciplinas.")
+System_Ext(storage, "Serviço de Armazenamento (MinIO / S3)", "Armazena relatórios e arquivos exportados.")
+System_Ext(grafana, "Dashboard de Estatísticas (Grafana)", "Exibe métricas e estatísticas de estudo.")
+
+Rel(user, system, "Utiliza para planejar e acompanhar seus estudos", "HTTPS")
+Rel(system, auth, "Solicita autenticação e tokens de acesso", "OIDC / OAuth2")
+Rel(system, apiConcursos, "Consulta dados sobre concursos e disciplinas", "REST API")
+Rel(system, storage, "Armazena relatórios e exportações", "S3 API")
+Rel(system, grafana, "Envia métricas e estatísticas de progresso", "Prometheus / Tempo")
+
+@enduml
