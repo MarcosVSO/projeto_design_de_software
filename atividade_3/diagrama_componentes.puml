@@ -1,0 +1,43 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+LAYOUT_WITH_LEGEND()
+
+Person(user, "Concurseiro / Vestibulando", "Usuário que utiliza o sistema para gerenciar seus estudos.")
+System_Boundary(s1, "Sistema de Gestão de Ciclos de Estudo") {
+
+  Component(frontend, "Frontend (React / Next.js)", "Aplicação Web", "Interface do usuário para planejar e acompanhar ciclos de estudo.")
+  Component(api, "API Backend (Quarkus)", "REST API", "Gerencia regras de negócio e comunicação com o banco de dados.")
+
+  Component(cicloService, "CicloService", "Service", "Controla a criação e o gerenciamento de ciclos de estudo.")
+  Component(disciplinaService, "DisciplinaService", "Service", "Gerencia disciplinas e seus pesos.")
+  Component(revisaoService, "RevisaoService", "Service", "Agenda revisões automáticas e registra resultados.")
+  Component(estatisticaService, "EstatisticaService", "Service", "Calcula e disponibiliza estatísticas de desempenho.")
+  Component(usuarioService, "UsuarioService", "Service", "Gerencia dados e autenticação de usuários.")
+
+  ComponentDb(db, "Banco de Dados", "PostgreSQL", "Armazena usuários, ciclos, disciplinas, revisões e estatísticas.")
+
+  Rel(frontend, api, "Envia e recebe dados via REST", "HTTPS/JSON")
+  Rel(api, cicloService, "Chama métodos de negócio")
+  Rel(api, disciplinaService, "Gerencia disciplinas")
+  Rel(api, revisaoService, "Agenda e consulta revisões")
+  Rel(api, estatisticaService, "Obtém estatísticas de desempenho")
+  Rel(api, usuarioService, "Valida tokens e dados de usuários")
+  Rel_L(cicloService, db, "CRUD de ciclos", "JPA/Hibernate")
+  Rel_L(disciplinaService, db, "CRUD de disciplinas", "JPA/Hibernate")
+  Rel_L(revisaoService, db, "CRUD de revisões", "JPA/Hibernate")
+  Rel_L(estatisticaService, db, "Leitura de métricas", "SQL Queries")
+}
+
+System_Ext(auth, "Serviço de Autenticação (OIDC/OAuth2)", "Autentica usuários via JWT")
+System_Ext(apiConcursos, "API de Concursos Públicos", "Fornece informações sobre concursos e disciplinas")
+System_Ext(storage, "Serviço de Armazenamento (MinIO/S3)", "Armazena relatórios e exportações")
+System_Ext(grafana, "Dashboard de Estatísticas (Grafana/Tempo)", "Exibe dados analíticos")
+
+Rel(user, frontend, "Acessa o sistema via navegador", "HTTPS")
+Rel(usuarioService, auth, "Solicita autenticação e tokens", "OIDC/OAuth2")
+Rel(api, apiConcursos, "Consulta informações de concursos", "REST API")
+Rel(api, storage, "Armazena relatórios e anexos", "S3 API")
+Rel(api, grafana, "Exporta métricas de desempenho", "Prometheus/Tempo")
+
+@enduml
