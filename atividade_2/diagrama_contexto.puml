@@ -1,20 +1,35 @@
 @startuml
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
 
+' Configurações para melhorar legibilidade
+LAYOUT_TOP_DOWN()
 LAYOUT_WITH_LEGEND()
 
+' Aumentar espaçamento entre elementos
+skinparam ranksep 80
+skinparam nodesep 100
+
 Person(user, "Concurseiro / Vestibulando", "Usuário que organiza e acompanha seus estudos para concursos e vestibulares.")
+
 System(system, "Gestão de Ciclos de Estudo", "Organiza ciclos, tarefas, revisões e estatísticas de desempenho.")
 
-System_Ext(auth, "Serviço de Autenticação (OIDC/OAuth2)", "Autentica e autoriza usuários.")
-System_Ext(apiConcursos, "API de Concursos Públicos", "Fornece dados de concursos, cargos e disciplinas.")
-System_Ext(storage, "Serviço de Armazenamento (MinIO / S3)", "Armazena relatórios e arquivos exportados.")
-System_Ext(grafana, "Dashboard de Estatísticas (Grafana)", "Exibe métricas e estatísticas de estudo.")
+System_Ext(auth, "Serviço de Autenticação", "Autentica e autoriza usuários via OIDC/OAuth2.")
 
-Rel(user, system, "Utiliza para planejar e acompanhar seus estudos", "HTTPS")
-Rel(system, auth, "Solicita autenticação e tokens de acesso", "OIDC / OAuth2")
-Rel(system, apiConcursos, "Consulta dados sobre concursos e disciplinas", "REST API")
-Rel(system, storage, "Armazena relatórios e exportações", "S3 API")
-Rel(system, grafana, "Envia métricas e estatísticas de progresso", "Prometheus / Tempo")
+System_Ext(apiConcursos, "API de Concursos Públicos", "Fornece dados de concursos, cargos e disciplinas.")
+
+System_Ext(storage, "Serviço de Armazenamento", "Armazena relatórios e arquivos exportados (MinIO/S3).")
+
+System_Ext(grafana, "Dashboard de Estatísticas", "Exibe métricas via Grafana.")
+
+' Relacionamentos com direções específicas
+Rel_Down(user, system, "Utiliza para planejar e acompanhar estudos", "HTTPS")
+
+Rel_Right(system, auth, "Solicita autenticação", "OIDC/OAuth2")
+
+Rel_Right(system, apiConcursos, "Consulta dados de concursos", "REST API")
+
+Rel_Down(system, storage, "Armazena relatórios", "S3 API")
+
+Rel_Left(system, grafana, "Envia métricas", "Prometheus")
 
 @enduml
