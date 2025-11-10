@@ -29,5 +29,4 @@ Este diagrama detalha os **principais componentes internos**, suas **responsabil
 | ----------------------------------------- | ----------------------------------------------------- |
 | **Serviço de Autenticação (OIDC/OAuth2)** | Autentica usuários e fornece tokens JWT para acesso.  |
 | **API de Concursos Públicos**             | Fornece dados de concursos, cargos e disciplinas.     |
-| **Serviço de Armazenamento (MinIO/S3)**   | Armazena relatórios e arquivos exportados.            |
 | **Dashboard (Grafana/Tempo)**             | Exibe métricas e estatísticas coletadas pelo sistema. |
