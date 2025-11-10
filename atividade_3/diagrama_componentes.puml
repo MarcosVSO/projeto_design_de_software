@@ -50,8 +50,6 @@ System_Ext(auth, "Serviço de Autenticação", "Autentica via OIDC/OAuth2")
 
 System_Ext(apiConcursos, "API de Concursos", "Fornece dados de concursos")
 
-System_Ext(storage, "Armazenamento", "MinIO/S3")
-
 System_Ext(grafana, "Dashboard Estatísticas", "Grafana/Tempo")
 
 ' Relacionamentos externos
@@ -60,8 +58,6 @@ Rel_Down(user, frontend, "Acessa via navegador", "HTTPS")
 Rel_Down(usuarioService, auth, "Solicita autenticação", "OIDC/OAuth2")
 
 Rel_Right(api, apiConcursos, "Consulta concursos", "REST API")
-
-Rel_Right(api, storage, "Armazena relatórios", "S3 API")
 
 Rel_Right(api, grafana, "Exporta métricas", "Prometheus")
 
