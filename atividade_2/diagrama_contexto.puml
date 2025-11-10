@@ -10,6 +10,8 @@ skinparam nodesep 100
 
 Person(user, "Concurseiro / Vestibulando", "Usuário que organiza e acompanha seus estudos para concursos e vestibulares.")
 
+Person(adm, "Administrador", "Responsável por cadastrar editais e gerenciar dados do sistema.")
+
 System(system, "Gestão de Ciclos de Estudo", "Organiza ciclos, tarefas, revisões e estatísticas de desempenho.")
 
 System_Ext(auth, "Serviço de Autenticação", "Autentica e autoriza usuários via OIDC/OAuth2.")
@@ -20,6 +22,8 @@ System_Ext(grafana, "Dashboard de Estatísticas", "Exibe métricas via Grafana."
 
 ' Relacionamentos com direções específicas
 Rel_Down(user, system, "Utiliza para planejar e acompanhar estudos", "HTTPS")
+
+Rel_Down(adm, system, "Utiliza para cadastrar editais e gerenciar usuários", "HTTPS")
 
 Rel_Down(system, auth, "Solicita autenticação", "OIDC/OAuth2")
 
