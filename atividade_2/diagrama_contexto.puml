@@ -3,7 +3,6 @@
 
 ' Configurações para melhorar legibilidade
 LAYOUT_TOP_DOWN()
-LAYOUT_WITH_LEGEND()
 
 ' Aumentar espaçamento entre elementos
 skinparam ranksep 80
@@ -22,7 +21,7 @@ System_Ext(grafana, "Dashboard de Estatísticas", "Exibe métricas via Grafana."
 ' Relacionamentos com direções específicas
 Rel_Down(user, system, "Utiliza para planejar e acompanhar estudos", "HTTPS")
 
-Rel_Right(system, auth, "Solicita autenticação", "OIDC/OAuth2")
+Rel_Down(system, auth, "Solicita autenticação", "OIDC/OAuth2")
 
 Rel_Right(system, apiConcursos, "Consulta dados de concursos", "REST API")
 

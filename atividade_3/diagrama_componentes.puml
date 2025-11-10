@@ -3,7 +3,6 @@
 
 ' Configurações para melhorar legibilidade
 LAYOUT_TOP_DOWN()
-LAYOUT_WITH_LEGEND()
 
 ' Aumentar espaçamento entre elementos
 skinparam ranksep 100
