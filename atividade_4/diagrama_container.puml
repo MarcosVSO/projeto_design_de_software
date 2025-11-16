@@ -1,0 +1,23 @@
+@startuml
+scale 1.2
+
+skinparam rectangle {
+  BackgroundColor #f8f8f8
+  BorderColor #333
+  RoundCorner 15
+  Shadowing true
+}
+
+actor "Usuário" as USER
+
+rectangle "Frontend Web\nReact / Next.js" as FRONTEND
+rectangle "Backend API\nQuarkus" as BACKEND
+database "Banco de Dados\nPostgreSQL" as DB
+rectangle "Autenticação\nOIDC" as AUTH
+
+USER --> FRONTEND : Acessa
+FRONTEND --> BACKEND : Consome API
+BACKEND --> AUTH : Autentica
+BACKEND --> DB : CRUD
+
+@enduml
