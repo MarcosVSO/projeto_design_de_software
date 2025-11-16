@@ -16,6 +16,8 @@ System(system, "Gestão de Ciclos de Estudo", "Organiza ciclos, tarefas, revisõ
 
 System_Ext(auth, "Serviço de Autenticação", "Autentica e autoriza usuários via OIDC/OAuth2.")
 
+System_Ext(notification, "Serviço de Notificações", "Push (Firebase/APNS) e e-mail")
+
 System_Ext(apiConcursos, "API de Concursos Públicos", "Fornece dados de concursos, cargos e disciplinas.")
 
 System_Ext(grafana, "Dashboard de Estatísticas", "Exibe métricas via Grafana.")
@@ -26,6 +28,8 @@ Rel_Down(user, system, "Utiliza para planejar e acompanhar estudos", "HTTPS")
 Rel_Down(adm, system, "Utiliza para cadastrar editais e gerenciar usuários", "HTTPS")
 
 Rel_Down(system, auth, "Solicita autenticação", "OIDC/OAuth2")
+
+Rel_Down(system, notification, "Push/e-mail (Retificações de editais, alteração em datas)", "HTTPS")
 
 Rel_Right(system, apiConcursos, "Consulta dados de concursos", "REST API")
 
