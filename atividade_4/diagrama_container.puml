@@ -1,23 +1,42 @@
 @startuml
-scale 1.2
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
 
-skinparam rectangle {
-  BackgroundColor #f8f8f8
-  BorderColor #333
-  RoundCorner 15
-  Shadowing true
+' Layout
+LAYOUT_WITH_LEGEND()
+
+title Diagrama de Container - Sistema de Gestão de Ciclos de Estudo (Arquitetura Otimizada)
+
+Person(student, "Concurseiro / Vestibulando", "Gerencia seus ciclos de estudo e revisões.")
+
+System_Ext(auth_system, "Serviço de Autenticação", "OIDC/OAuth2 (Keycloak/Auth0)")
+System_Ext(public_exams_api, "API de Concursos Públicos", "Fornece dados de editais e vagas.")
+System_Ext(stats_dashboard, "Dashboard de Estatísticas", "Grafana / Prometheus")
+System_Ext(email_system, "Provedor de E-mail/Push", "AWS SES / Firebase")
+
+System_Boundary(study_system, "Ecossistema de Gestão de Estudos") {
+    
+    Container(spa, "Frontend Web", "React / Next.js", "Interface interativa para o usuário.")
+    
+    Container(backend, "API Backend", "Java / Quarkus", "Gerencia regras de negócio, ciclos e revisões.")
+    
+    ContainerDb(database, "Banco de Dados", "PostgreSQL", "Armazena dados transacionais (ciclos, tarefas).")
+    
+    ContainerDb(cache, "Cache Layer", "Redis", "Cache de sessões, editais e dados de leitura frequente.")
+        
 }
 
-actor "Usuário" as USER
 
-rectangle "Frontend Web\nReact / Next.js" as FRONTEND
-rectangle "Backend API\nQuarkus" as BACKEND
-database "Banco de Dados\nPostgreSQL" as DB
-rectangle "Autenticação\nOIDC" as AUTH
+' Relacionamentos
+Rel(student, spa, "Usa", "HTTPS")
+Rel(spa, backend, "Solicita dados", "JSON/HTTPS")
 
-USER --> FRONTEND : Acessa
-FRONTEND --> BACKEND : Consome API
-BACKEND --> AUTH : Autentica
-BACKEND --> DB : CRUD
+' Backend Flows
+Rel(backend, auth_system, "Valida Tokens", "HTTPS")
+Rel(backend, database, "Leitura/Escrita", "JDBC/JPA")
+Rel(backend, cache, "Cache (Leitura Rápida)", "TCP")
+Rel(backend, public_exams_api, "Sincroniza Editais", "HTTPS")
+Rel(backend, stats_dashboard, "Exporta Métricas", "Prometheus")
+Rel(backend, email_system, "Dispara", "HTTPS")
+
 
 @enduml
