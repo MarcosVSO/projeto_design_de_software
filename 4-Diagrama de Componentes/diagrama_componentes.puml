@@ -4,14 +4,12 @@
 title Diagrama de Componentes - Sistema de Gestão de Ciclos de Estudo
 
 Person(user, "Concurseiro / Vestibulando", "Usuário que utiliza o sistema para gerenciar seus estudos.")
-' NEW: Adicionado Admin para justificar o acesso ao Grafana, se aplicável
 Person_Ext(admin, "DevOps / Admin", "Monitora a saúde do sistema.")
 
 System_Ext(authSystem, "Serviço de Autorização", "Autoriza via OIDC/OAuth2")
 System_Ext(emailSystem, "Provedor de E-mail/Push", "AWS SES / Firebase")
 System_Ext(concursosApi, "API de Concursos", "Fornece dados de Concursos")
 
-' NEW: Infraestrutura de Observabilidade
 System_Ext(prometheus, "Prometheus",  "Coleta e armazena métricas (Time Series DB)")
 System_Ext(grafana, "Grafana", "Visualização de métricas e alertas")
 
@@ -20,33 +18,27 @@ Container_Boundary(system, "Sistema de Gestão de Ciclos de Estudo") {
     Component(frontend, "Frontend", "React/Next.js", "Interface do usuário.")
     ComponentDb(db, "Banco de Dados", "PostgreSQL", "Armazena dados do sistema.")
 
-    ' --- Vertical: Ciclo ---
     Component(cicloCtrl, "Ciclo Controller", "REST Controller", "Expõe endpoints de ciclos.")
     Component(cicloSvc, "Ciclo Service", "Service", "Gerencia ciclos de estudo.")
     Component(cicloRepo, "Ciclo Repository", "Repository", "Acesso a dados de ciclos.")
 
-    ' --- Vertical: Disciplina ---
     Component(discCtrl, "Disciplina Controller", "REST Controller", "Expõe endpoints de disciplinas.")
     Component(discSvc, "Disciplina Service", "Service", "Gerencia disciplinas.")
     Component(discRepo, "Disciplina Repository", "Repository", "Acesso a dados de disciplinas.")
 
-    ' --- Vertical: Revisao ---
     Component(revCtrl, "Revisao Controller", "REST Controller", "Expõe endpoints de revisões.")
     Component(revSvc, "Revisao Service", "Service", "Agenda revisões automáticas.")
     Component(revRepo, "Revisao Repository", "Repository", "Acesso a dados de revisões.")
 
-    ' --- Vertical: Estatistica ---
     Component(estCtrl, "Estatistica Controller", "REST Controller", "Expõe endpoints de estatísticas.")
     Component(estSvc, "Estatistica Service", "Service", "Calcula estatísticas.")
     Component(estRepo, "Estatistica Repository", "Repository", "Leitura de métricas.")
 
-    ' --- Vertical: Usuario ---
     Component(userCtrl, "Usuario Controller", "REST Controller", "Expõe endpoints de usuário.")
     Component(userSvc, "Usuario Service", "Service", "Gerencia autenticação e usuários.")
     Component(autorizacaoProvider, "Autorizacao Provider", "Interface (Port)", "Especificaçoes para autorização")
     Component(oidcAdapter, "OIDC Adapter", "Component (Adapter)", "Implementa a comunicação OIDC")
 
-    ' --- Vertical: Notificacao ---
     Component(notifCtrl, "Notificacao Controller", "REST Controller", "Expõe endpoints de notificação.")
     Component(notifSvc, "Notificacao Service", "Service", "Gerencia envio de notificações.")
     Component(notiProvider, "Notificação Provider", "Interface (Port)", "Especificaçoes para envio de mensagens")
@@ -57,14 +49,11 @@ Container_Boundary(system, "Sistema de Gestão de Ciclos de Estudo") {
     Component(concursoProvider, "Concurso Provider", "Interface (Port)", "Especificaçoes para acessar info concursos")
     Component(concursoAdapter, "Concurso Adapter", "Component (Adapter)", "Implementa Cliente da API de concursos")
 
-    ' NEW: Componente interno que expõe as métricas
     Component(metricsComp, "Metrics Exporter", "Spring Actuator / Micrometer", "Expõe endpoint /actuator/prometheus para scraping.")
 }
 
-' Relações Usuário e Frontend
 Rel(user, frontend, "Acessa via navegador", "HTTPS")
 
-' Frontend -> Controllers
 Rel(frontend, cicloCtrl, "Gerencia ciclos", "HTTPS/JSON")
 Rel(frontend, discCtrl, "Gerencia disciplinas", "HTTPS/JSON")
 Rel(frontend, revCtrl, "Consulta revisões", "HTTPS/JSON")
@@ -73,7 +62,6 @@ Rel(frontend, userCtrl, "Login/Cadastro", "HTTPS/JSON")
 Rel(frontend, notifCtrl, "Configura notificações", "HTTPS/JSON")
 Rel(frontend, concursoCtrl, "Consulta Concursos", "HTTPS/JSON")
 
-' Fluxos Internos (Simplificados para focar na mudança)
 Rel(cicloCtrl, cicloSvc, "Chama regras")
 Rel(cicloSvc, cicloRepo, "Utiliza")
 Rel(cicloRepo, db, "JPA")
@@ -102,11 +90,10 @@ Rel(emailAdapter, emailSystem, "HTTP")
 
 
 Rel(concursoCtrl, concursoSvc, "Processa")
-Rel(concursoSvc, concursoProvider, "HTTP")
+Rel(concursoSvc, concursoProvider, "Usa (Abstração)")
 Rel(concursoProvider, concursoAdapter, "Implementada por")
 Rel(concursoAdapter, concursosApi, "HTTP")
 
-' NEW: Fluxo de Observabilidade
 Rel(prometheus, metricsComp, "Scrape (Pull) de métricas", "HTTP/GET")
 Rel(grafana, prometheus, "Consulta (PromQL)", "HTTP/JSON")
 Rel(admin, grafana, "Visualiza Dashboards", "HTTPS")

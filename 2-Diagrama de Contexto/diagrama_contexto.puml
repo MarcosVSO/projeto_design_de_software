@@ -1,10 +1,8 @@
 @startuml
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
 
-' Configurações para melhorar legibilidade
 LAYOUT_TOP_DOWN()
 
-' Aumentar espaçamento entre elementos
 skinparam ranksep 80
 skinparam nodesep 100
 
@@ -22,7 +20,6 @@ System_Ext(apiConcursos, "API de Concursos Públicos", "Fornece dados de concurs
 
 System_Ext(grafana, "Dashboard de Estatísticas", "Exibe métricas via Grafana.")
 
-' Relacionamentos com direções específicas
 Rel_Down(user, system, "Utiliza para planejar e acompanhar estudos", "HTTPS")
 
 Rel_Down(adm, system, "Utiliza para cadastrar editais e gerenciar usuários", "HTTPS")

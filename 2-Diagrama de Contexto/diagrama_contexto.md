@@ -17,7 +17,6 @@ O **Diagrama de Contexto (C4 - Nível 1)** descreve as principais **entidades ex
 | **Sistema**          | **Gestão de Ciclos de Estudo**              | Sistema central responsável por gerenciar ciclos, disciplinas, tarefas, revisões e estatísticas.         |
 | **Sistema Externo**  | **API de Concursos Públicos**               | Fonte externa de dados sobre concursos, cargos, disciplinas e editais.                                   |
 | **Sistema Externo**  | **Serviço de Autenticação (OIDC / OAuth2)** | Sistema de login seguro, utilizado para autenticar e autorizar o acesso do usuário.                      |
-| **Sistema Externo**  | **Serviço de Armazenamento (MinIO / S3)**   | Usado para armazenar anexos e relatórios exportados (PDF, CSV, etc.).                                    |
 | **Sistema Externo**  | **Dashboard de Estatísticas (Grafana)**     | Sistema de visualização conectado a métricas e logs do ciclo de estudo.                                  |
 
 ---
@@ -29,4 +28,3 @@ O **Diagrama de Contexto (C4 - Nível 1)** descreve as principais **entidades ex
 3. O usuário cria e gerencia seus **ciclos de estudo**, **disciplinas**, e **tarefas**.
 4. O sistema consulta **dados de concursos** via **API de Concursos Públicos**.
 5. Estatísticas de desempenho são enviadas para o **Dashboard (Grafana)**.
-6. Relatórios e anexos são salvos no **Serviço de Armazenamento (S3 ou MinIO)**.
