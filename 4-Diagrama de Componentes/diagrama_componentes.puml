@@ -4,10 +4,16 @@
 title Diagrama de Componentes - Sistema de Gestão de Ciclos de Estudo
 
 Person(user, "Concurseiro / Vestibulando", "Usuário que utiliza o sistema para gerenciar seus estudos.")
+' NEW: Adicionado Admin para justificar o acesso ao Grafana, se aplicável
+Person_Ext(admin, "DevOps / Admin", "Monitora a saúde do sistema.")
 
-System_Ext(authSystem, "Serviço de Autenticação", "Autentica via OIDC/OAuth2")
+System_Ext(authSystem, "Serviço de Autorização", "Autoriza via OIDC/OAuth2")
 System_Ext(emailSystem, "Provedor de E-mail/Push", "AWS SES / Firebase")
 System_Ext(concursosApi, "API de Concursos", "Fornece dados de Concursos")
+
+' NEW: Infraestrutura de Observabilidade
+System_Ext(prometheus, "Prometheus",  "Coleta e armazena métricas (Time Series DB)")
+System_Ext(grafana, "Grafana", "Visualização de métricas e alertas")
 
 Container_Boundary(system, "Sistema de Gestão de Ciclos de Estudo") {
     
@@ -34,17 +40,25 @@ Container_Boundary(system, "Sistema de Gestão de Ciclos de Estudo") {
     Component(estSvc, "Estatistica Service", "Service", "Calcula estatísticas.")
     Component(estRepo, "Estatistica Repository", "Repository", "Leitura de métricas.")
 
-    ' --- Vertical: Usuario (Exceção: Sistema Externo, sem Repo) ---
+    ' --- Vertical: Usuario ---
     Component(userCtrl, "Usuario Controller", "REST Controller", "Expõe endpoints de usuário.")
     Component(userSvc, "Usuario Service", "Service", "Gerencia autenticação e usuários.")
+    Component(autorizacaoProvider, "Autorizacao Provider", "Interface (Port)", "Especificaçoes para autorização")
+    Component(oidcAdapter, "OIDC Adapter", "Component (Adapter)", "Implementa a comunicação OIDC")
 
-    ' --- Vertical: Notificacao (Exceção: Sistema Externo, sem Repo) ---
+    ' --- Vertical: Notificacao ---
     Component(notifCtrl, "Notificacao Controller", "REST Controller", "Expõe endpoints de notificação.")
     Component(notifSvc, "Notificacao Service", "Service", "Gerencia envio de notificações.")
+    Component(notiProvider, "Notificação Provider", "Interface (Port)", "Especificaçoes para envio de mensagens")
+    Component(emailAdapter, "Email Adapter", "Component (Adapter)", "Implementa o envio AWS/SMTP")
 
     Component(concursoCtrl, "Concurso Controller", "REST Controller", "Expõe endpoints dos concursos")
     Component(concursoSvc, "Concurso Service", "REST Controller", "Realiza busca por concursos")
+    Component(concursoProvider, "Concurso Provider", "Interface (Port)", "Especificaçoes para acessar info concursos")
+    Component(concursoAdapter, "Concurso Adapter", "Component (Adapter)", "Implementa Cliente da API de concursos")
 
+    ' NEW: Componente interno que expõe as métricas
+    Component(metricsComp, "Metrics Exporter", "Spring Actuator / Micrometer", "Expõe endpoint /actuator/prometheus para scraping.")
 }
 
 ' Relações Usuário e Frontend
@@ -59,35 +73,42 @@ Rel(frontend, userCtrl, "Login/Cadastro", "HTTPS/JSON")
 Rel(frontend, notifCtrl, "Configura notificações", "HTTPS/JSON")
 Rel(frontend, concursoCtrl, "Consulta Concursos", "HTTPS/JSON")
 
-' Fluxo Ciclo
-Rel(cicloCtrl, cicloSvc, "Chama regras de negócio")
+' Fluxos Internos (Simplificados para focar na mudança)
+Rel(cicloCtrl, cicloSvc, "Chama regras")
 Rel(cicloSvc, cicloRepo, "Utiliza")
-Rel(cicloRepo, db, "Lê/Escreve", "JPA")
+Rel(cicloRepo, db, "JPA")
 
-' Fluxo Disciplina
-Rel(discCtrl, discSvc, "Chama regras de negócio")
+Rel(discCtrl, discSvc, "Chama regras")
 Rel(discSvc, discRepo, "Utiliza")
-Rel(discRepo, db, "Lê/Escreve", "JPA")
+Rel(discRepo, db, "JPA")
 
-' Fluxo Revisao
-Rel(revCtrl, revSvc, "Chama regras de negócio")
+Rel(revCtrl, revSvc, "Chama regras")
 Rel(revSvc, revRepo, "Utiliza")
-Rel(revRepo, db, "Lê/Escreve", "JPA")
+Rel(revRepo, db, "JPA")
 
-' Fluxo Estatistica
-Rel(estCtrl, estSvc, "Chama regras de negócio")
+Rel(estCtrl, estSvc, "Chama regras")
 Rel(estSvc, estRepo, "Utiliza")
-Rel(estRepo, db, "Lê dados", "SQL")
+Rel(estRepo, db, "SQL")
 
-' Fluxo Usuario (Conexão externa, sem repo)
-Rel(userCtrl, userSvc, "Processa requisição")
-Rel(userSvc, authSystem, "Solicita autenticação", "OIDC/OAuth2")
+Rel(userCtrl, userSvc, "Processa")
+Rel(userSvc, autorizacaoProvider, "Usa (Abstração)")
+Rel(autorizacaoProvider, oidcAdapter  , "Implementada por")
+Rel(oidcAdapter,  authSystem, "HTTP")
 
-' Fluxo Notificacao (Conexão externa, sem repo)
-Rel(notifCtrl, notifSvc, "Processa envio")
-Rel(notifSvc, emailSystem, "Envia e-mail/push", "HTTP")
+Rel(notifCtrl, notifSvc, "Processa")
+Rel(notifSvc, notiProvider, "Usa (Abstração)")
+Rel(notiProvider, emailAdapter, "Implementada por")
+Rel(emailAdapter, emailSystem, "HTTP")
 
-Rel(concursoCtrl, concursoSvc, "Processa Requisição" )
-Rel(concursoSvc,concursosApi, "Request na API externa", "HTTP" )
+
+Rel(concursoCtrl, concursoSvc, "Processa")
+Rel(concursoSvc, concursoProvider, "HTTP")
+Rel(concursoProvider, concursoAdapter, "Implementada por")
+Rel(concursoAdapter, concursosApi, "HTTP")
+
+' NEW: Fluxo de Observabilidade
+Rel(prometheus, metricsComp, "Scrape (Pull) de métricas", "HTTP/GET")
+Rel(grafana, prometheus, "Consulta (PromQL)", "HTTP/JSON")
+Rel(admin, grafana, "Visualiza Dashboards", "HTTPS")
 
 @enduml

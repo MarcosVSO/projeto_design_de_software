@@ -21,7 +21,6 @@ System_Boundary(study_system, "Ecossistema de Gestão de Estudos") {
     
     ContainerDb(database, "Banco de Dados", "PostgreSQL", "Armazena dados transacionais (ciclos, tarefas).")
     
-    ContainerDb(cache, "Cache Layer", "Redis", "Cache de sessões, editais e dados de leitura frequente.")
         
 }
 
@@ -33,7 +32,6 @@ Rel(spa, backend, "Solicita dados", "JSON/HTTPS")
 ' Backend Flows
 Rel(backend, auth_system, "Valida Tokens", "HTTPS")
 Rel(backend, database, "Leitura/Escrita", "JDBC/JPA")
-Rel(backend, cache, "Cache (Leitura Rápida)", "TCP")
 Rel(backend, public_exams_api, "Sincroniza Editais", "HTTPS")
 Rel(backend, stats_dashboard, "Exporta Métricas", "Prometheus")
 Rel(backend, email_system, "Dispara", "HTTPS")
