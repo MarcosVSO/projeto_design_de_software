@@ -58,3 +58,9 @@ Este diagrama mostra como o **Frontend Web**, **Backend API**, **Banco de Dados*
 | **API**          | Quarkus, JAX-RS, RESTEasy                | REST, JSON, HTTPS |
 | **Autenticação** | OpenID Connect (OIDC), OAuth2            | HTTPS, JWT        |
 | **Persistência** | PostgreSQL, JDBC                         | TCP/IP, SQL       |
+
+---
+
+## 5. Diagrama
+
+![diagrama_container](diagrama_container.png)

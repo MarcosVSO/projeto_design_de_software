@@ -28,3 +28,9 @@ O **Diagrama de Contexto (C4 - Nível 1)** descreve as principais **entidades ex
 3. O usuário cria e gerencia seus **ciclos de estudo**, **disciplinas**, e **tarefas**.
 4. O sistema consulta **dados de concursos** via **API de Concursos Públicos**.
 5. Estatísticas de desempenho são enviadas para o **Dashboard (Grafana)**.
+
+---
+
+## 4. Diagrama
+
+![diagrama_contexto](diagrama_contexto.png)
