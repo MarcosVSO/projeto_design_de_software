@@ -6,7 +6,7 @@ title Diagrama de Componentes - Sistema de Gestão de Ciclos de Estudo
 Person(user, "Concurseiro / Vestibulando", "Usuário que utiliza o sistema para gerenciar seus estudos.")
 Person_Ext(admin, "DevOps / Admin", "Monitora a saúde do sistema.")
 
-System_Ext(authSystem, "Serviço de Autenticação", "Autentica via OIDC/OAuth2")
+System_Ext(authSystem, "Serviço de Autorização", "Autoriza via OIDC/OAuth2")
 System_Ext(emailSystem, "Provedor de E-mail/Push", "AWS SES / Firebase")
 System_Ext(concursosApi, "API de Concursos", "Fornece dados de Concursos")
 
@@ -36,7 +36,7 @@ Container_Boundary(system, "Sistema de Gestão de Ciclos de Estudo") {
 
     Component(userCtrl, "Usuario Controller", "REST Controller", "Expõe endpoints de usuário.")
     Component(userSvc, "Usuario Service", "Service", "Gerencia autenticação e usuários.")
-    Component(autenticacaoProvider, "Autenticacao Provider", "Interface (Port)", "Especificaçoes para autenticação")
+    Component(autorizacaoProvider, "Autorizacao Provider", "Interface (Port)", "Especificaçoes para autorização")
     Component(oidcAdapter, "OIDC Adapter", "Component (Adapter)", "Implementa a comunicação OIDC")
 
     Component(notifCtrl, "Notificacao Controller", "REST Controller", "Expõe endpoints de notificação.")
@@ -79,8 +79,8 @@ Rel(estSvc, estRepo, "Utiliza")
 Rel(estRepo, db, "SQL")
 
 Rel(userCtrl, userSvc, "Processa")
-Rel(userSvc, autenticacaoProvider, "Usa (Abstração)")
-Rel(autenticacaoProvider, oidcAdapter  , "Implementada por")
+Rel(userSvc, autorizacaoProvider, "Usa (Abstração)")
+Rel(autorizacaoProvider, oidcAdapter  , "Implementada por")
 Rel(oidcAdapter,  authSystem, "HTTP")
 
 Rel(notifCtrl, notifSvc, "Processa")
